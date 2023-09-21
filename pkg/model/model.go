@@ -24,3 +24,7 @@ type User struct {
 	Gender      string    `json:"gender"`
 	Nationality string    `json:"nationality"`
 }
+
+type CommonResponse struct {
+	Message string `json:"message"`
+}

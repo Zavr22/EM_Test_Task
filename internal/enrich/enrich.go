@@ -4,13 +4,13 @@ import (
 	"EMTestTask/cache"
 	"EMTestTask/pkg/api"
 	"EMTestTask/pkg/model"
-	"EMTestTask/web/rest"
+	"EMTestTask/web/rest/repository"
 	"context"
 	"fmt"
 	"time"
 )
 
-func EnrichAndSaveToDB(name, surname, patronymic string, userRepo *rest.UserRepository, cache *cache.RedisClient) error {
+func EnrichAndSaveToDB(name, surname, patronymic string, userRepo *repository.UserRepository, cache *cache.RedisClient) error {
 	age, err := api.GetAgifyAge(name)
 	if err != nil {
 		return err
@@ -31,7 +31,7 @@ func EnrichAndSaveToDB(name, surname, patronymic string, userRepo *rest.UserRepo
 		Gender:      gender,
 		Nationality: nationality,
 	}
-	userID, err := userRepo.SaveUser(context.Background(), user)
+	userID, err := userRepo.CreateUser(context.Background(), user)
 	if err != nil {
 		return fmt.Errorf("error save user in db, %v", err)
 	}

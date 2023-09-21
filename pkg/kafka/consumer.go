@@ -4,14 +4,14 @@ import (
 	"EMTestTask/cache"
 	"EMTestTask/internal/enrich"
 	"EMTestTask/pkg/model"
-	"EMTestTask/web/rest"
+	"EMTestTask/web/rest/repository"
 	"context"
 	"encoding/json"
 	"github.com/segmentio/kafka-go"
 	"log"
 )
 
-func ListenToKafkaTopic(userRepo *rest.UserRepository, cache *cache.RedisClient) {
+func ListenToKafkaTopic(userRepo *repository.UserRepository, cache *cache.RedisClient) {
 	topic := "FIO"
 	brokers := []string{"localhost:9092"}
 	groupID := "my-group"
