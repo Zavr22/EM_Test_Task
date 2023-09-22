@@ -9,7 +9,7 @@ import (
 
 // User interface consists of user service methods
 type User interface {
-	CreateUser(ctx context.Context, user *model.FIO) error
+	CreateUser(ctx context.Context, user *model.FIO) (uuid.UUID, error)
 	GetAllUsers(ctx context.Context, page int) ([]*model.User, error)
 	GetUser(ctx context.Context, userID uuid.UUID) (model.User, error)
 	UpdateProfile(ctx context.Context, userID uuid.UUID, input model.EnrichedFIO) error

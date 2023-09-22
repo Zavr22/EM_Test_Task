@@ -7,21 +7,22 @@ import (
 	"EMTestTask/web/rest/repository"
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"time"
 )
 
-func EnrichAndSaveToDB(name, surname, patronymic string, userRepo *repository.UserRepository, cache *cache.RedisClient) error {
+func EnrichAndSaveToDB(name, surname, patronymic string, userRepo *repository.UserRepository, cache *cache.RedisClient) (uuid.UUID, error) {
 	age, err := api.GetAgifyAge(name)
 	if err != nil {
-		return err
+		return uuid.Nil, err
 	}
 	gender, err := api.GetGenderizeGender(name)
 	if err != nil {
-		return err
+		return uuid.Nil, err
 	}
 	nationality, err := api.GetNationalizeNationality(name)
 	if err != nil {
-		return err
+		return uuid.Nil, err
 	}
 	user := &model.User{
 		Name:        name,
@@ -33,11 +34,11 @@ func EnrichAndSaveToDB(name, surname, patronymic string, userRepo *repository.Us
 	}
 	userID, err := userRepo.CreateUser(context.Background(), user)
 	if err != nil {
-		return fmt.Errorf("error save user in db, %v", err)
+		return uuid.Nil, fmt.Errorf("error save user in db, %v", err)
 	}
 	err = cache.SetData(userID.String(), user, 1*time.Hour)
 	if err != nil {
-		return fmt.Errorf("error saving in cache, %v", err)
+		return uuid.Nil, fmt.Errorf("error saving in cache, %v", err)
 	}
-	return nil
+	return userID, nil
 }

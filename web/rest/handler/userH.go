@@ -19,7 +19,7 @@ import (
 // @Accept  json
 // @Produce  json
 // @Param input body models.UserProfile true "user info"
-// @Success 200 {object} models.CreateUserResponse
+// @Success 200 {object}
 // @Failure 400,404,403 {object} models.CommonResponse
 // @Failure 500 {object} models.CommonResponse
 // @Router /api/users [post]
@@ -32,14 +32,14 @@ func (h *Handler) CreateUser(c echo.Context) error {
 		}).Errorf("Bind json, %s", errBind)
 		return echo.NewHTTPError(http.StatusInternalServerError, model.CommonResponse{Message: "data not correct"})
 	}
-	err := h.userS.CreateUser(c.Request().Context(), &reqBody)
+	userID, err := h.userS.CreateUser(c.Request().Context(), &reqBody)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"message": "unable to create user",
 		}).Errorf("error while creating user, %s", err)
 		return echo.NewHTTPError(http.StatusBadRequest, model.CommonResponse{Message: "error while creating user"})
 	}
-	return c.JSON(http.StatusOK, model.CommonResponse{Message: "user created successfully"})
+	return c.JSON(http.StatusOK, userID)
 }
 
 // GetUsers is used to get all users

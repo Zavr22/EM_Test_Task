@@ -12,7 +12,7 @@ type User interface {
 	GetUser(ctx context.Context, userID uuid.UUID) (model.User, error)
 	UpdateProfile(ctx context.Context, userID uuid.UUID, input model.EnrichedFIO) error
 	DeleteProfile(ctx context.Context, userID uuid.UUID) error
-	SaveUser(ctx context.Context, user *model.FIO) error
+	SaveUser(ctx context.Context, user *model.FIO) (uuid.UUID, error)
 }
 
 type UserService struct {
@@ -23,7 +23,7 @@ func NewUserService(userRepo User) *UserService {
 	return &UserService{userRepo: userRepo}
 }
 
-func (s *UserService) CreateUser(ctx context.Context, user *model.FIO) error {
+func (s *UserService) CreateUser(ctx context.Context, user *model.FIO) (uuid.UUID, error) {
 	return s.userRepo.SaveUser(ctx, user)
 }
 
@@ -37,11 +37,9 @@ func (s *UserService) GetUser(ctx context.Context, userID uuid.UUID) (model.User
 }
 
 func (s *UserService) UpdateProfile(ctx context.Context, userID uuid.UUID, input model.EnrichedFIO) error {
-	//TODO implement me
-	panic("implement me")
+	return s.userRepo.UpdateProfile(ctx, userID, input)
 }
 
 func (s *UserService) DeleteProfile(ctx context.Context, userID uuid.UUID) error {
-	//TODO implement me
-	panic("implement me")
+	return s.userRepo.DeleteProfile(ctx, userID)
 }
