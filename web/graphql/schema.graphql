@@ -1,0 +1,20 @@
+type User {
+    id: ID!
+    name: String!
+    surname: String!
+    patronymic: String!
+    age: Int!
+    gender: String!
+    nationality: String!
+}
+
+type Query {
+    getUsers(page: Int!): [User]!
+    getUser(id: ID!): User!
+}
+
+type Mutation {
+    createUser(name: String!, surname: String!, patronymic: String, age: Int!, gender: String!, nationality: String!): ID!
+    updateUser(id: ID!, name: String, surname: String, patronymic: String, age: Int, gender: String, nationality: String): ID!
+    deleteUser(id: ID!): ID!
+}

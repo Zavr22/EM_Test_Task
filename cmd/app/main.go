@@ -4,6 +4,7 @@ import (
 	"EMTestTask/cache"
 	"EMTestTask/pkg/db"
 	"EMTestTask/pkg/kafka"
+	"EMTestTask/web/graphql"
 	"EMTestTask/web/rest/handler"
 	"EMTestTask/web/rest/repository"
 	"EMTestTask/web/rest/service"
@@ -51,6 +52,10 @@ func main() {
 
 	profileHandler := handler.NewHandler(userServ)
 	profileHandler.InitRoutes(e)
+	resolver := graphql.NewResolver(userRepo)
+	graphqlHandler := graphql.GraphQLHandler(resolver)
+
+	e.POST("/graphql", graphqlHandler)
 
 	// Graceful shutdown
 	logrus.Print("App Started")
