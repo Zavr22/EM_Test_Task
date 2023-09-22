@@ -32,14 +32,14 @@ func (h *Handler) CreateUser(c echo.Context) error {
 		}).Errorf("Bind json, %s", errBind)
 		return echo.NewHTTPError(http.StatusInternalServerError, model.CommonResponse{Message: "data not correct"})
 	}
-	userID, err := h.userS.CreateUser(c.Request().Context(), &reqBody)
+	err := h.userS.CreateUser(c.Request().Context(), &reqBody)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
-			"userID": userID,
+			"message": "unable to create user",
 		}).Errorf("error while creating user, %s", err)
 		return echo.NewHTTPError(http.StatusBadRequest, model.CommonResponse{Message: "error while creating user"})
 	}
-	return c.JSON(http.StatusOK, userID)
+	return c.JSON(http.StatusOK, model.CommonResponse{Message: "user created successfully"})
 }
 
 // GetUsers is used to get all users

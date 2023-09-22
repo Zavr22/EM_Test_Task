@@ -45,7 +45,7 @@ func main() {
 	defer database.ClosePool(db)
 	// init utils, services, repos
 	redisClient := cache.NewRedisClient(rdb)
-	userRepo := repository.NewUserRepository(db)
+	userRepo := repository.NewUserRepository(db, redisClient)
 
 	userServ := service.NewUserService(userRepo)
 
