@@ -48,8 +48,12 @@ func (r *UserRepository) GetAllUsers(ctx context.Context, offset int) ([]*model.
 }
 
 func (r *UserRepository) GetUser(ctx context.Context, userID uuid.UUID) (model.User, error) {
-	//TODO implement me
-	panic("implement me")
+	var user model.User
+	err := r.db.QueryRow(ctx, `SELECT id, name, surname, patronymic, age, gender, nationality FROM users WHERE id=$1`, userID).Scan(&user.ID, &user.Name, &user.Surname, &user.Patronymic, &user.Age, &user.Gender, &user.Nationality)
+	if err != nil {
+		return model.User{}, fmt.Errorf("error get user by id, %v", err)
+	}
+	return user, nil
 }
 
 func (r *UserRepository) UpdateProfile(ctx context.Context, userID uuid.UUID, input model.EnrichedFIO) error {

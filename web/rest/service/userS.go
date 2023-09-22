@@ -33,8 +33,7 @@ func (s *UserService) GetAllUsers(ctx context.Context, page int) ([]*model.User,
 }
 
 func (s *UserService) GetUser(ctx context.Context, userID uuid.UUID) (model.User, error) {
-	//TODO implement me
-	panic("implement me")
+	return s.userRepo.GetUser(ctx, userID)
 }
 
 func (s *UserService) UpdateProfile(ctx context.Context, userID uuid.UUID, input model.EnrichedFIO) error {
