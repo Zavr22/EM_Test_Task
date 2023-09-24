@@ -1,10 +1,10 @@
 package cache
 
 import (
-	"EMTestTask/pkg/model"
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/Zavr22/EMTestTask/pkg/model"
 	"github.com/go-redis/redis/v8"
 	"time"
 )

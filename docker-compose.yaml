@@ -1,0 +1,63 @@
+version: '3'
+services:
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - default
+  postgres:
+    image: postgres:latest
+    user: postgres
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      #volumes:
+      #- db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - default
+  flyway:
+    image: flyway/flyway
+    command: -url=jdbc:postgresql://postgres:5432/postgres -user=postgres -password=postgres -locations=filesystem:/flyway/sql -connectRetries=10  migrate
+    volumes:
+      - ${PWD}/pkg/db/migrations/sql:/flyway/sql
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    networks:
+      - default
+  kafka:
+    image: bitnami/kafka
+    ports:
+      - "9092:9092"
+    networks:
+      - default
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mkulik/testtask2:testtask2
+    depends_on:
+      - postgres
+      - flyway
+      - redis
+      - kafka
+    ports:
+      - "9000:9000"
+    environment:
+      - pUrl=postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+      - DB=postgres
+      - PASSWORD=postgres
+      - USER=postgres
+      - PORT=5432
+    networks:
+      - default

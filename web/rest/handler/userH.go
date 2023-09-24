@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"EMTestTask/pkg/model"
+	"github.com/Zavr22/EMTestTask/pkg/model"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"

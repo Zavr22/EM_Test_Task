@@ -1,16 +1,16 @@
 package main
 
 import (
-	"EMTestTask/pkg/model"
 	"context"
 	"encoding/json"
+	"github.com/Zavr22/EMTestTask/pkg/model"
 	"github.com/segmentio/kafka-go"
 	"log"
 )
 
 func main() {
 	topic := "FIO"
-	brokers := []string{"localhost:9092"}
+	brokers := []string{"kafka:9092"}
 
 	w := kafka.NewWriter(kafka.WriterConfig{
 		Brokers:  brokers,

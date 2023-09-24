@@ -1,11 +1,11 @@
 package repository
 
 import (
-	"EMTestTask/cache"
-	"EMTestTask/internal/enrich"
-	"EMTestTask/pkg/model"
 	"context"
 	"fmt"
+	"github.com/Zavr22/EMTestTask/cache"
+	enr "github.com/Zavr22/EMTestTask/internal/enrich"
+	"github.com/Zavr22/EMTestTask/pkg/model"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
@@ -111,7 +111,7 @@ func (r *UserRepository) DeleteProfile(ctx context.Context, userID uuid.UUID) er
 }
 
 func (r *UserRepository) SaveUser(ctx context.Context, user *model.FIO) (uuid.UUID, error) {
-	userID, err := enrich.EnrichAndSaveToDB(user.Name, user.Surname, user.Patronymic, r, r.client)
+	userID, err := enr.EnrichAndSaveToDB(user.Name, user.Surname, user.Patronymic, r, r.client)
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("error saving user rest, %v", err)
 	}

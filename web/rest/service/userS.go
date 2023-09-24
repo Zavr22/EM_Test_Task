@@ -1,8 +1,8 @@
 package service
 
 import (
-	"EMTestTask/pkg/model"
 	"context"
+	"github.com/Zavr22/EMTestTask/pkg/model"
 	"github.com/google/uuid"
 )
 

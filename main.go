@@ -1,14 +1,14 @@
 package main
 
 import (
-	"EMTestTask/cache"
-	"EMTestTask/pkg/db"
-	"EMTestTask/pkg/kafka"
-	"EMTestTask/web/graphql"
-	"EMTestTask/web/rest/handler"
-	"EMTestTask/web/rest/repository"
-	"EMTestTask/web/rest/service"
 	"context"
+	"github.com/Zavr22/EMTestTask/cache"
+	database "github.com/Zavr22/EMTestTask/pkg/db"
+	"github.com/Zavr22/EMTestTask/pkg/kafka"
+	"github.com/Zavr22/EMTestTask/web/graphql"
+	"github.com/Zavr22/EMTestTask/web/rest/handler"
+	"github.com/Zavr22/EMTestTask/web/rest/repository"
+	"github.com/Zavr22/EMTestTask/web/rest/service"
 	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"

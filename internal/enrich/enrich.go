@@ -1,12 +1,12 @@
 package enrich
 
 import (
-	"EMTestTask/cache"
-	"EMTestTask/pkg/api"
-	"EMTestTask/pkg/model"
-	"EMTestTask/web/rest/repository"
 	"context"
 	"fmt"
+	"github.com/Zavr22/EMTestTask/cache"
+	"github.com/Zavr22/EMTestTask/pkg/api"
+	"github.com/Zavr22/EMTestTask/pkg/model"
+	"github.com/Zavr22/EMTestTask/web/rest/repository"
 	"github.com/google/uuid"
 	"time"
 )

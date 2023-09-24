@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"EMTestTask/pkg/model"
 	"context"
+	"github.com/Zavr22/EMTestTask/pkg/model"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )

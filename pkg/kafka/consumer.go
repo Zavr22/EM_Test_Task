@@ -1,19 +1,17 @@
 package kafka
 
 import (
-	"EMTestTask/cache"
-	"EMTestTask/internal/enrich"
-	"EMTestTask/pkg/model"
-	"EMTestTask/web/rest/repository"
 	"context"
 	"encoding/json"
+	"github.com/Zavr22/EMTestTask/pkg/model"
+	"github.com/Zavr22/EMTestTask/web/rest/repository"
 	"github.com/segmentio/kafka-go"
 	"log"
 )
 
-func ListenToKafkaTopic(userRepo *repository.UserRepository, cache *cache.RedisClient) {
+func ListenToKafkaTopic(userRepo *repository.UserRepository) {
 	topic := "FIO"
-	brokers := []string{"localhost:9092"}
+	brokers := []string{"kafka:9092"}
 	groupID := "my-group"
 
 	r := kafka.NewReader(kafka.ReaderConfig{
@@ -40,11 +38,12 @@ func ListenToKafkaTopic(userRepo *repository.UserRepository, cache *cache.RedisC
 			continue
 		}
 
-		if err := enrich.EnrichAndSaveToDB(fio.Name, fio.Surname, fio.Patronymic, userRepo, cache); err != nil {
+		if userID, err := userRepo.SaveUser(context.Background(), &fio); err != nil {
 			log.Printf("Error processing message: %v", err)
 			if err := sendToFailedTopic(message.Value); err != nil {
 				log.Printf("Error sending message to FIO_FAILED: %v", err)
 			}
+			log.Printf("userID: %v", userID)
 			continue
 		}
 	}
@@ -52,7 +51,7 @@ func ListenToKafkaTopic(userRepo *repository.UserRepository, cache *cache.RedisC
 
 func sendToFailedTopic(message []byte) error {
 	topic := "FIO_FAILED"
-	brokers := []string{"localhost:9092"}
+	brokers := []string{"kafka:9092"}
 
 	w := kafka.NewWriter(kafka.WriterConfig{
 		Brokers:  brokers,
