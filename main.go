@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/Zavr22/EMTestTask/cache"
 	database "github.com/Zavr22/EMTestTask/pkg/db"
 	"github.com/Zavr22/EMTestTask/pkg/kafka"
@@ -20,7 +21,11 @@ import (
 
 func main() {
 	e := echo.New()
-
+	cwd, err := os.Getwd()
+	if err != nil {
+		logrus.Fatalf("Error getting current working directory: %v", err)
+	}
+	fmt.Printf("Current Working Directory: %s\n", cwd)
 	// SWAGGER
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
@@ -30,11 +35,13 @@ func main() {
 
 	// REDIS
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "redis:6379",
+		Addr:     "localhost:6379",
 		Password: "",
 		DB:       0,
 	})
-
+	//if err := godotenv.Load(); err != nil {
+	//	logrus.Fatalf("error loading .env: %v", err)
+	//}
 	// POSTGRES
 	db, err := database.NewPostgresDB()
 	if err != nil {
@@ -44,6 +51,7 @@ func main() {
 	}
 
 	defer database.ClosePool(db)
+
 	// init utils, services, repos
 	redisClient := cache.NewRedisClient(rdb)
 	userRepo := repository.NewUserRepository(db, redisClient)

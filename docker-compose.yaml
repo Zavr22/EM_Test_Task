@@ -53,6 +53,8 @@ services:
       - kafka
     ports:
       - "9000:9000"
+    env_file:
+      - .env
     environment:
       - pUrl=postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
       - DB=postgres

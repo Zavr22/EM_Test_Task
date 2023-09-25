@@ -14,6 +14,8 @@ RUN go mod download
 
 COPY . .
 
+COPY .env /app/.env
+
 RUN go build -o /app/main
 
 CMD [ "/main" ]
