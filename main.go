@@ -48,12 +48,13 @@ func main() {
 	redisClient := cache.NewRedisClient(rdb)
 	userRepo := repository.NewUserRepository(db, redisClient)
 
-	userServ := service.NewUserService(userRepo)
+	userServ := service.NewUserService(userRepo, redisClient)
 
 	profileHandler := handler.NewHandler(userServ)
 	profileHandler.InitRoutes(e)
 	resolver := graphql.NewResolver(userRepo)
 	graphqlHandler := graphql.GraphQLHandler(resolver)
+	kafkaConsumer := kafka.NewKafkaConsumer(userServ)
 
 	e.POST("/graphql", graphqlHandler)
 
@@ -72,7 +73,7 @@ func main() {
 	if err := rdb.Close(); err != nil {
 		logrus.Errorf("error occured on db connection close: %s", err.Error())
 	}
-	go kafka.ListenToKafkaTopic(userRepo, redisClient)
+	go kafkaConsumer.ListenToKafkaTopic()
 
 	select {}
 }

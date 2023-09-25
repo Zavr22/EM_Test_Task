@@ -14,6 +14,7 @@ type User interface {
 	GetUser(ctx context.Context, userID uuid.UUID) (model.User, error)
 	UpdateProfile(ctx context.Context, userID uuid.UUID, input model.EnrichedFIO) error
 	DeleteProfile(ctx context.Context, userID uuid.UUID) error
+	EnrichAndSaveToDB(ctx context.Context, name, surname, patronymic string) (uuid.UUID, error)
 }
 
 type Handler struct {

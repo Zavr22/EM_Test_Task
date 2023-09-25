@@ -9,7 +9,7 @@ import (
 )
 
 func NewPostgresDB() (*pgxpool.Pool, error) {
-	if err := godotenv.Load(); err != nil {
+	if err := godotenv.Load(".env"); err != nil {
 		return nil, fmt.Errorf("error loading .env: %v", err)
 	}
 
