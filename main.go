@@ -36,7 +36,7 @@ func main() {
 
 	// REDIS
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     "redis:6379",
 		Password: "",
 		DB:       0,
 	})
@@ -76,6 +76,8 @@ func main() {
 	profileHandler := handler.NewHandler(userServ)
 	profileHandler.InitRoutes(e, graphql2.GraphQLHandler(resolver))
 
+	go kafkaConsumer.ListenToKafkaTopic()
+	kafkaConsumer.ProduceMessage()
 	// Graceful shutdown
 	logrus.Print("App Started")
 	quit := make(chan os.Signal, 1)
@@ -91,7 +93,5 @@ func main() {
 	if err := rdb.Close(); err != nil {
 		logrus.Errorf("error occured on db connection close: %s", err.Error())
 	}
-	go kafkaConsumer.ListenToKafkaTopic()
-	kafkaConsumer.ProduceMessage()
 	select {}
 }
