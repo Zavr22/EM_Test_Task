@@ -3,15 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/Zavr22/EMTestTask/cache"
+	"github.com/Zavr22/EMTestTask/pkg/cache"
 	database "github.com/Zavr22/EMTestTask/pkg/db"
-	"github.com/Zavr22/EMTestTask/pkg/kafka"
-	"github.com/Zavr22/EMTestTask/web/graphql"
-	"github.com/Zavr22/EMTestTask/web/rest/handler"
-	"github.com/Zavr22/EMTestTask/web/rest/repository"
-	"github.com/Zavr22/EMTestTask/web/rest/service"
+	graphql2 "github.com/Zavr22/EMTestTask/pkg/graphql"
+	kafkaServ "github.com/Zavr22/EMTestTask/pkg/kafka"
+	"github.com/Zavr22/EMTestTask/pkg/rest/handler"
+	"github.com/Zavr22/EMTestTask/pkg/rest/repository"
+	"github.com/Zavr22/EMTestTask/pkg/rest/service"
 	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
+	"github.com/segmentio/kafka-go"
 	"github.com/sirupsen/logrus"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"os"
@@ -58,13 +59,22 @@ func main() {
 
 	userServ := service.NewUserService(userRepo, redisClient)
 
-	profileHandler := handler.NewHandler(userServ)
-	profileHandler.InitRoutes(e)
-	resolver := graphql.NewResolver(userRepo)
-	graphqlHandler := graphql.GraphQLHandler(resolver)
-	kafkaConsumer := kafka.NewKafkaConsumer(userServ)
+	resolver := graphql2.NewResolver(userRepo)
+	network := "tcp"
+	address := "kafka:9092"
+	topic := "FIO"
+	partition := 0
 
-	e.POST("/graphql", graphqlHandler)
+	conn, errKafka := kafka.DialLeader(context.Background(), network, address, topic, partition)
+	if errKafka != nil {
+		logrus.WithFields(logrus.Fields{
+			"Error connection to kafka": errKafka,
+		}).Fatal("kafka error connection")
+	}
+
+	kafkaConsumer := kafkaServ.NewKafkaConsumer(userServ, conn)
+	profileHandler := handler.NewHandler(userServ)
+	profileHandler.InitRoutes(e, graphql2.GraphQLHandler(resolver))
 
 	// Graceful shutdown
 	logrus.Print("App Started")
@@ -82,6 +92,6 @@ func main() {
 		logrus.Errorf("error occured on db connection close: %s", err.Error())
 	}
 	go kafkaConsumer.ListenToKafkaTopic()
-
+	kafkaConsumer.ProduceMessage()
 	select {}
 }

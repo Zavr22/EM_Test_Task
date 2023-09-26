@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/Zavr22/EMTestTask/cache"
 	"github.com/Zavr22/EMTestTask/pkg/api"
+	"github.com/Zavr22/EMTestTask/pkg/cache"
 	"github.com/Zavr22/EMTestTask/pkg/model"
 	"github.com/google/uuid"
 	"time"

@@ -3,7 +3,7 @@ package graphql
 import (
 	"context"
 	"github.com/Zavr22/EMTestTask/pkg/model"
-	"github.com/Zavr22/EMTestTask/web/rest/repository"
+	"github.com/Zavr22/EMTestTask/pkg/rest/repository"
 	"github.com/google/uuid"
 )
 

@@ -1,0 +1,236 @@
+definitions:
+  model.CommonResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  model.EnrichedFIO:
+    properties:
+      age:
+        type: integer
+      gender:
+        type: string
+      name:
+        type: string
+      nationality:
+        type: string
+      patronymic:
+        type: string
+      surname:
+        type: string
+    type: object
+  model.FIO:
+    properties:
+      name:
+        type: string
+      patronymic:
+        type: string
+      surname:
+        type: string
+    type: object
+  model.User:
+    properties:
+      age:
+        type: integer
+      gender:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      nationality:
+        type: string
+      patronymic:
+        type: string
+      surname:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/users:
+    get:
+      consumes:
+      - application/json
+      description: get users
+      operationId: get-users
+      parameters:
+      - description: current page
+        in: query
+        name: page
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+      summary: Get users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: create user
+      operationId: create-user
+      parameters:
+      - description: user info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.FIO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+      summary: Create user
+      tags:
+      - users
+  /api/users/:id:
+    delete:
+      consumes:
+      - application/json
+      description: delete user
+      operationId: delete-user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+      summary: Delete user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: get user by id
+      operationId: get-user-by-id
+      parameters:
+      - description: userID
+        in: query
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+      summary: Get user by id
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: update user
+      operationId: update-user
+      parameters:
+      - description: enter new account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnrichedFIO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.CommonResponse'
+      summary: Update user
+      tags:
+      - users
+swagger: "2.0"

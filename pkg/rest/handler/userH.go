@@ -18,10 +18,10 @@ import (
 // @ID create-user
 // @Accept  json
 // @Produce  json
-// @Param input body models.UserProfile true "user info"
-// @Success 200 {object}
-// @Failure 400,404,403 {object} models.CommonResponse
-// @Failure 500 {object} models.CommonResponse
+// @Param input body model.FIO true "user info"
+// @Success 200 {object} model.User
+// @Failure 400,404,403 {object} model.CommonResponse
+// @Failure 500 {object} model.CommonResponse
 // @Router /api/users [post]
 func (h *Handler) CreateUser(c echo.Context) error {
 	var reqBody model.FIO
@@ -50,10 +50,11 @@ func (h *Handler) CreateUser(c echo.Context) error {
 // @Description get users
 // @ID get-users
 // @Accept json
+// @Param page query string true "current page"
 // @Produce  json
-// @Success 200 {array} models.UserResponse
-// @Failure 400,404,403 {object} models.CommonResponse
-// @Failure 500 {object} models.CommonResponse
+// @Success 200 {array} model.User
+// @Failure 400,404,403 {object} model.CommonResponse
+// @Failure 500 {object} model.CommonResponse
 // @Router /api/users [get]
 func (h *Handler) GetUsers(c echo.Context) error {
 	pageStr := c.Param("page")
@@ -83,9 +84,10 @@ func (h *Handler) GetUsers(c echo.Context) error {
 // @ID get-user-by-id
 // @Accept   json
 // @Produce  json
-// @Success 200 {object} models.UserResponse
-// @Failure 400,404,403 {object} models.CommonResponse
-// @Failure 500 {object} models.CommonResponse
+// @Param userID query string true "userID"
+// @Success 200 {object} model.User
+// @Failure 400,404,403 {object} model.CommonResponse
+// @Failure 500 {object} model.CommonResponse
 // @Router /api/users/:id [get]
 func (h *Handler) GetUserByID(c echo.Context) error {
 	c.Param("id")
@@ -115,10 +117,10 @@ func (h *Handler) GetUserByID(c echo.Context) error {
 // @ID update-user
 // @Accept   json
 // @Produce  json
-// @Param input body models.UpdateProfileInput true "enter new account info"
-// @Success 200 {object} models.CommonResponse
-// @Failure 400,404,403 {object} models.CommonResponse
-// @Failure 500 {object} models.CommonResponse
+// @Param input body model.EnrichedFIO true "enter new account info"
+// @Success 200 {object} model.CommonResponse
+// @Failure 400,404,403 {object} model.CommonResponse
+// @Failure 500 {object} model.CommonResponse
 // @Router /api/users/:id [put]
 func (h *Handler) UpdateUser(c echo.Context) error {
 	var reqBody model.EnrichedFIO
@@ -156,9 +158,9 @@ func (h *Handler) UpdateUser(c echo.Context) error {
 // @ID delete-user
 // @Accept   json
 // @Produce  json
-// @Success 200 {object} models.CommonResponse
-// @Failure 400,404,403 {object} models.CommonResponse
-// @Failure 500 {object} models.CommonResponse
+// @Success 200 {object} model.CommonResponse
+// @Failure 400,404,403 {object} model.CommonResponse
+// @Failure 500 {object} model.CommonResponse
 // @Router /api/users/:id [delete]
 func (h *Handler) DeleteUser(c echo.Context) error {
 	c.Param("id")

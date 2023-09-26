@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
-	"github.com/Zavr22/EMTestTask/cache"
+	"github.com/Zavr22/EMTestTask/pkg/cache"
 	"github.com/Zavr22/EMTestTask/pkg/model"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"

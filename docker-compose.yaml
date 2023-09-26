@@ -35,12 +35,24 @@ services:
       - postgres
     networks:
       - default
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - default
   kafka:
-    image: bitnami/kafka
+    image: 'bitnami/kafka:latest'
     ports:
       - "9092:9092"
     networks:
       - default
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
   app:
     build:
       context: .
@@ -56,10 +68,11 @@ services:
     env_file:
       - .env
     environment:
-      - pUrl=postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+      - pUrl=postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable
       - DB=postgres
       - PASSWORD=postgres
       - USER=postgres
       - PORT=5432
+      - KAFKA_BROKERS=kafka:9092
     networks:
       - default

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"github.com/Zavr22/EMTestTask/pkg/graphql"
 	"github.com/Zavr22/EMTestTask/pkg/model"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -26,7 +27,7 @@ func NewHandler(userS User) *Handler {
 }
 
 // InitRoutes is used to init routes for web service
-func (h *Handler) InitRoutes(router *echo.Echo) *echo.Echo {
+func (h *Handler) InitRoutes(router *echo.Echo, graphqlHandler echo.HandlerFunc) *echo.Echo {
 
 	api := router.Group("api")
 	api.POST("/users", h.CreateUser)
@@ -34,6 +35,8 @@ func (h *Handler) InitRoutes(router *echo.Echo) *echo.Echo {
 	api.GET("/users/:id", h.GetUserByID)
 	api.PUT("/users/:id", h.UpdateUser)
 	api.DELETE("/users/:id", h.DeleteUser)
+	router.POST("/query", graphqlHandler)
+	router.GET("/", graphql.PlaygroundHandler())
 
 	router.Logger.Fatal(router.Start(":9000"))
 	return router
