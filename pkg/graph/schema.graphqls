@@ -37,7 +37,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  createUser(fio: FIO!, age: Int!, gender: String!, nationality: String!): ID!
+  createUser(fio: FIO!): ID!
   updateProfile(userID: ID!, input: EnrichedFIO!): CommonResponse!
   deleteProfile(userID: ID!): CommonResponse!
   enrichAndSaveToDB(name: String!, surname: String!, patronymic: String): ID!

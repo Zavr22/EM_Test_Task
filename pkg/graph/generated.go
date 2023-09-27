@@ -14,7 +14,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"github.com/Zavr22/EMTestTask/pkg/graph/model"
+	"github.com/Zavr22/EMTestTask/pkg/graph/models"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -56,10 +56,10 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateUser        func(childComplexity int, fio model.Fio, age int, gender string, nationality string) int
+		CreateUser        func(childComplexity int, fio models.Fio) int
 		DeleteProfile     func(childComplexity int, userID string) int
 		EnrichAndSaveToDb func(childComplexity int, name string, surname string, patronymic *string) int
-		UpdateProfile     func(childComplexity int, userID string, input model.EnrichedFio) int
+		UpdateProfile     func(childComplexity int, userID string, input models.EnrichedFio) int
 	}
 
 	Query struct {
@@ -77,14 +77,14 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreateUser(ctx context.Context, fio model.Fio, age int, gender string, nationality string) (string, error)
-	UpdateProfile(ctx context.Context, userID string, input model.EnrichedFio) (*model.CommonResponse, error)
-	DeleteProfile(ctx context.Context, userID string) (*model.CommonResponse, error)
+	CreateUser(ctx context.Context, fio models.Fio) (string, error)
+	UpdateProfile(ctx context.Context, userID string, input models.EnrichedFio) (*models.CommonResponse, error)
+	DeleteProfile(ctx context.Context, userID string) (*models.CommonResponse, error)
 	EnrichAndSaveToDb(ctx context.Context, name string, surname string, patronymic *string) (string, error)
 }
 type QueryResolver interface {
-	GetAllUsers(ctx context.Context, page int) ([]*model.UserU, error)
-	GetUser(ctx context.Context, userID string) (*model.UserU, error)
+	GetAllUsers(ctx context.Context, page int) ([]*models.UserU, error)
+	GetUser(ctx context.Context, userID string) (*models.UserU, error)
 }
 
 type executableSchema struct {
@@ -140,7 +140,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateUser(childComplexity, args["fio"].(model.Fio), args["age"].(int), args["gender"].(string), args["nationality"].(string)), true
+		return e.complexity.Mutation.CreateUser(childComplexity, args["fio"].(models.Fio)), true
 
 	case "Mutation.deleteProfile":
 		if e.complexity.Mutation.DeleteProfile == nil {
@@ -176,7 +176,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateProfile(childComplexity, args["userID"].(string), args["input"].(model.EnrichedFio)), true
+		return e.complexity.Mutation.UpdateProfile(childComplexity, args["userID"].(string), args["input"].(models.EnrichedFio)), true
 
 	case "Query.getAllUsers":
 		if e.complexity.Query.GetAllUsers == nil {
@@ -366,42 +366,15 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.Fio
+	var arg0 models.Fio
 	if tmp, ok := rawArgs["fio"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fio"))
-		arg0, err = ec.unmarshalNFIO2githubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelᚐFio(ctx, tmp)
+		arg0, err = ec.unmarshalNFIO2githubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelsᚐFio(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
 	args["fio"] = arg0
-	var arg1 int
-	if tmp, ok := rawArgs["age"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("age"))
-		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["age"] = arg1
-	var arg2 string
-	if tmp, ok := rawArgs["gender"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gender"))
-		arg2, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["gender"] = arg2
-	var arg3 string
-	if tmp, ok := rawArgs["nationality"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nationality"))
-		arg3, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["nationality"] = arg3
 	return args, nil
 }
 
@@ -465,10 +438,10 @@ func (ec *executionContext) field_Mutation_updateProfile_args(ctx context.Contex
 		}
 	}
 	args["userID"] = arg0
-	var arg1 model.EnrichedFio
+	var arg1 models.EnrichedFio
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNEnrichedFIO2githubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelᚐEnrichedFio(ctx, tmp)
+		arg1, err = ec.unmarshalNEnrichedFIO2githubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelsᚐEnrichedFio(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -560,7 +533,7 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _CommonResponse_message(ctx context.Context, field graphql.CollectedField, obj *model.CommonResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _CommonResponse_message(ctx context.Context, field graphql.CollectedField, obj *models.CommonResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CommonResponse_message(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -604,7 +577,7 @@ func (ec *executionContext) fieldContext_CommonResponse_message(ctx context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _FIOResponse_name(ctx context.Context, field graphql.CollectedField, obj *model.FIOResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _FIOResponse_name(ctx context.Context, field graphql.CollectedField, obj *models.FIOResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_FIOResponse_name(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -648,7 +621,7 @@ func (ec *executionContext) fieldContext_FIOResponse_name(ctx context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _FIOResponse_surname(ctx context.Context, field graphql.CollectedField, obj *model.FIOResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _FIOResponse_surname(ctx context.Context, field graphql.CollectedField, obj *models.FIOResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_FIOResponse_surname(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -692,7 +665,7 @@ func (ec *executionContext) fieldContext_FIOResponse_surname(ctx context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _FIOResponse_patronymic(ctx context.Context, field graphql.CollectedField, obj *model.FIOResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _FIOResponse_patronymic(ctx context.Context, field graphql.CollectedField, obj *models.FIOResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_FIOResponse_patronymic(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -747,7 +720,7 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateUser(rctx, fc.Args["fio"].(model.Fio), fc.Args["age"].(int), fc.Args["gender"].(string), fc.Args["nationality"].(string))
+		return ec.resolvers.Mutation().CreateUser(rctx, fc.Args["fio"].(models.Fio))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -802,7 +775,7 @@ func (ec *executionContext) _Mutation_updateProfile(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateProfile(rctx, fc.Args["userID"].(string), fc.Args["input"].(model.EnrichedFio))
+		return ec.resolvers.Mutation().UpdateProfile(rctx, fc.Args["userID"].(string), fc.Args["input"].(models.EnrichedFio))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -814,9 +787,9 @@ func (ec *executionContext) _Mutation_updateProfile(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.CommonResponse)
+	res := resTmp.(*models.CommonResponse)
 	fc.Result = res
-	return ec.marshalNCommonResponse2ᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelᚐCommonResponse(ctx, field.Selections, res)
+	return ec.marshalNCommonResponse2ᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelsᚐCommonResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateProfile(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -873,9 +846,9 @@ func (ec *executionContext) _Mutation_deleteProfile(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.CommonResponse)
+	res := resTmp.(*models.CommonResponse)
 	fc.Result = res
-	return ec.marshalNCommonResponse2ᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelᚐCommonResponse(ctx, field.Selections, res)
+	return ec.marshalNCommonResponse2ᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelsᚐCommonResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_deleteProfile(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -987,9 +960,9 @@ func (ec *executionContext) _Query_getAllUsers(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.UserU)
+	res := resTmp.([]*models.UserU)
 	fc.Result = res
-	return ec.marshalNUserU2ᚕᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelᚐUserUᚄ(ctx, field.Selections, res)
+	return ec.marshalNUserU2ᚕᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelsᚐUserUᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getAllUsers(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1054,9 +1027,9 @@ func (ec *executionContext) _Query_getUser(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.UserU)
+	res := resTmp.(*models.UserU)
 	fc.Result = res
-	return ec.marshalNUserU2ᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelᚐUserU(ctx, field.Selections, res)
+	return ec.marshalNUserU2ᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelsᚐUserU(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1224,7 +1197,7 @@ func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _UserU_id(ctx context.Context, field graphql.CollectedField, obj *model.UserU) (ret graphql.Marshaler) {
+func (ec *executionContext) _UserU_id(ctx context.Context, field graphql.CollectedField, obj *models.UserU) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_UserU_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1268,7 +1241,7 @@ func (ec *executionContext) fieldContext_UserU_id(ctx context.Context, field gra
 	return fc, nil
 }
 
-func (ec *executionContext) _UserU_fio(ctx context.Context, field graphql.CollectedField, obj *model.UserU) (ret graphql.Marshaler) {
+func (ec *executionContext) _UserU_fio(ctx context.Context, field graphql.CollectedField, obj *models.UserU) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_UserU_fio(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1294,9 +1267,9 @@ func (ec *executionContext) _UserU_fio(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.FIOResponse)
+	res := resTmp.(*models.FIOResponse)
 	fc.Result = res
-	return ec.marshalNFIOResponse2ᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelᚐFIOResponse(ctx, field.Selections, res)
+	return ec.marshalNFIOResponse2ᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelsᚐFIOResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_UserU_fio(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1320,7 +1293,7 @@ func (ec *executionContext) fieldContext_UserU_fio(ctx context.Context, field gr
 	return fc, nil
 }
 
-func (ec *executionContext) _UserU_age(ctx context.Context, field graphql.CollectedField, obj *model.UserU) (ret graphql.Marshaler) {
+func (ec *executionContext) _UserU_age(ctx context.Context, field graphql.CollectedField, obj *models.UserU) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_UserU_age(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1364,7 +1337,7 @@ func (ec *executionContext) fieldContext_UserU_age(ctx context.Context, field gr
 	return fc, nil
 }
 
-func (ec *executionContext) _UserU_gender(ctx context.Context, field graphql.CollectedField, obj *model.UserU) (ret graphql.Marshaler) {
+func (ec *executionContext) _UserU_gender(ctx context.Context, field graphql.CollectedField, obj *models.UserU) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_UserU_gender(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1408,7 +1381,7 @@ func (ec *executionContext) fieldContext_UserU_gender(ctx context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _UserU_nationality(ctx context.Context, field graphql.CollectedField, obj *model.UserU) (ret graphql.Marshaler) {
+func (ec *executionContext) _UserU_nationality(ctx context.Context, field graphql.CollectedField, obj *models.UserU) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_UserU_nationality(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3225,8 +3198,8 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputEnrichedFIO(ctx context.Context, obj interface{}) (model.EnrichedFio, error) {
-	var it model.EnrichedFio
+func (ec *executionContext) unmarshalInputEnrichedFIO(ctx context.Context, obj interface{}) (models.EnrichedFio, error) {
+	var it models.EnrichedFio
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -3299,8 +3272,8 @@ func (ec *executionContext) unmarshalInputEnrichedFIO(ctx context.Context, obj i
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputFIO(ctx context.Context, obj interface{}) (model.Fio, error) {
-	var it model.Fio
+func (ec *executionContext) unmarshalInputFIO(ctx context.Context, obj interface{}) (models.Fio, error) {
+	var it models.Fio
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -3356,7 +3329,7 @@ func (ec *executionContext) unmarshalInputFIO(ctx context.Context, obj interface
 
 var commonResponseImplementors = []string{"CommonResponse"}
 
-func (ec *executionContext) _CommonResponse(ctx context.Context, sel ast.SelectionSet, obj *model.CommonResponse) graphql.Marshaler {
+func (ec *executionContext) _CommonResponse(ctx context.Context, sel ast.SelectionSet, obj *models.CommonResponse) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commonResponseImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -3395,7 +3368,7 @@ func (ec *executionContext) _CommonResponse(ctx context.Context, sel ast.Selecti
 
 var fIOResponseImplementors = []string{"FIOResponse"}
 
-func (ec *executionContext) _FIOResponse(ctx context.Context, sel ast.SelectionSet, obj *model.FIOResponse) graphql.Marshaler {
+func (ec *executionContext) _FIOResponse(ctx context.Context, sel ast.SelectionSet, obj *models.FIOResponse) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, fIOResponseImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -3605,7 +3578,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 
 var userUImplementors = []string{"UserU"}
 
-func (ec *executionContext) _UserU(ctx context.Context, sel ast.SelectionSet, obj *model.UserU) graphql.Marshaler {
+func (ec *executionContext) _UserU(ctx context.Context, sel ast.SelectionSet, obj *models.UserU) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, userUImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -4003,11 +3976,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNCommonResponse2githubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelᚐCommonResponse(ctx context.Context, sel ast.SelectionSet, v model.CommonResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNCommonResponse2githubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelsᚐCommonResponse(ctx context.Context, sel ast.SelectionSet, v models.CommonResponse) graphql.Marshaler {
 	return ec._CommonResponse(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommonResponse2ᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelᚐCommonResponse(ctx context.Context, sel ast.SelectionSet, v *model.CommonResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNCommonResponse2ᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelsᚐCommonResponse(ctx context.Context, sel ast.SelectionSet, v *models.CommonResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -4017,17 +3990,17 @@ func (ec *executionContext) marshalNCommonResponse2ᚖgithubᚗcomᚋZavr22ᚋEM
 	return ec._CommonResponse(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNEnrichedFIO2githubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelᚐEnrichedFio(ctx context.Context, v interface{}) (model.EnrichedFio, error) {
+func (ec *executionContext) unmarshalNEnrichedFIO2githubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelsᚐEnrichedFio(ctx context.Context, v interface{}) (models.EnrichedFio, error) {
 	res, err := ec.unmarshalInputEnrichedFIO(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNFIO2githubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelᚐFio(ctx context.Context, v interface{}) (model.Fio, error) {
+func (ec *executionContext) unmarshalNFIO2githubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelsᚐFio(ctx context.Context, v interface{}) (models.Fio, error) {
 	res, err := ec.unmarshalInputFIO(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNFIOResponse2ᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelᚐFIOResponse(ctx context.Context, sel ast.SelectionSet, v *model.FIOResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNFIOResponse2ᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelsᚐFIOResponse(ctx context.Context, sel ast.SelectionSet, v *models.FIOResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -4082,11 +4055,11 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNUserU2githubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelᚐUserU(ctx context.Context, sel ast.SelectionSet, v model.UserU) graphql.Marshaler {
+func (ec *executionContext) marshalNUserU2githubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelsᚐUserU(ctx context.Context, sel ast.SelectionSet, v models.UserU) graphql.Marshaler {
 	return ec._UserU(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNUserU2ᚕᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelᚐUserUᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.UserU) graphql.Marshaler {
+func (ec *executionContext) marshalNUserU2ᚕᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelsᚐUserUᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.UserU) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -4110,7 +4083,7 @@ func (ec *executionContext) marshalNUserU2ᚕᚖgithubᚗcomᚋZavr22ᚋEMTestTa
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNUserU2ᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelᚐUserU(ctx, sel, v[i])
+			ret[i] = ec.marshalNUserU2ᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelsᚐUserU(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -4130,7 +4103,7 @@ func (ec *executionContext) marshalNUserU2ᚕᚖgithubᚗcomᚋZavr22ᚋEMTestTa
 	return ret
 }
 
-func (ec *executionContext) marshalNUserU2ᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelᚐUserU(ctx context.Context, sel ast.SelectionSet, v *model.UserU) graphql.Marshaler {
+func (ec *executionContext) marshalNUserU2ᚖgithubᚗcomᚋZavr22ᚋEMTestTaskᚋpkgᚋgraphᚋmodelsᚐUserU(ctx context.Context, sel ast.SelectionSet, v *models.UserU) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

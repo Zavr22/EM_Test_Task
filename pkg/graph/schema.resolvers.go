@@ -7,14 +7,14 @@ package graph
 import (
 	"context"
 	"fmt"
+
+	models1 "github.com/Zavr22/EMTestTask/pkg/graph/models"
 	"github.com/Zavr22/EMTestTask/pkg/models"
 	"github.com/google/uuid"
-
-	"github.com/Zavr22/EMTestTask/pkg/graph/model"
 )
 
 // CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, fio model.Fio, age int, gender string, nationality string) (string, error) {
+func (r *mutationResolver) CreateUser(ctx context.Context, fio models1.Fio) (string, error) {
 	user := &models.FIO{
 		Name:       fio.Name,
 		Surname:    fio.Surname,
@@ -30,7 +30,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, fio model.Fio, age in
 }
 
 // UpdateProfile is the resolver for the updateProfile field.
-func (r *mutationResolver) UpdateProfile(ctx context.Context, userID string, input model.EnrichedFio) (*model.CommonResponse, error) {
+func (r *mutationResolver) UpdateProfile(ctx context.Context, userID string, input models1.EnrichedFio) (*models1.CommonResponse, error) {
 	userUUID, err := uuid.Parse(userID)
 	if err != nil {
 		return nil, fmt.Errorf("invalid userID: %s", userID)
@@ -52,7 +52,7 @@ func (r *mutationResolver) UpdateProfile(ctx context.Context, userID string, inp
 		return nil, err
 	}
 
-	response := &model.CommonResponse{
+	response := &models1.CommonResponse{
 		Message: "Profile updated successfully",
 	}
 
@@ -60,7 +60,7 @@ func (r *mutationResolver) UpdateProfile(ctx context.Context, userID string, inp
 }
 
 // DeleteProfile is the resolver for the deleteProfile field.
-func (r *mutationResolver) DeleteProfile(ctx context.Context, userID string) (*model.CommonResponse, error) {
+func (r *mutationResolver) DeleteProfile(ctx context.Context, userID string) (*models1.CommonResponse, error) {
 	userUUID, err := uuid.Parse(userID)
 	if err != nil {
 		return nil, fmt.Errorf("invalid userID: %s", userID)
@@ -71,7 +71,7 @@ func (r *mutationResolver) DeleteProfile(ctx context.Context, userID string) (*m
 		return nil, err
 	}
 
-	response := &model.CommonResponse{
+	response := &models1.CommonResponse{
 		Message: "Profile deleted successfully",
 	}
 
@@ -89,21 +89,21 @@ func (r *mutationResolver) EnrichAndSaveToDb(ctx context.Context, name string, s
 }
 
 // GetAllUsers is the resolver for the getAllUsers field.
-func (r *queryResolver) GetAllUsers(ctx context.Context, page int) ([]*model.UserU, error) {
+func (r *queryResolver) GetAllUsers(ctx context.Context, page int) ([]*models1.UserU, error) {
 	offset := (page - 1) * 30
 
 	users, err := r.userService.GetAllUsers(ctx, offset)
 	if err != nil {
 		return nil, err
 	}
-	var usersResponse []*model.UserU
+	var usersResponse []*models1.UserU
 	for _, user := range users {
-		fio := &model.FIOResponse{
+		fio := &models1.FIOResponse{
 			Name:       user.Name,
 			Surname:    user.Surname,
 			Patronymic: &user.Patronymic,
 		}
-		user := &model.UserU{
+		user := &models1.UserU{
 			ID:          user.ID.String(),
 			Fio:         fio,
 			Age:         user.Age,
@@ -116,7 +116,7 @@ func (r *queryResolver) GetAllUsers(ctx context.Context, page int) ([]*model.Use
 }
 
 // GetUser is the resolver for the getUser field.
-func (r *queryResolver) GetUser(ctx context.Context, userID string) (*model.UserU, error) {
+func (r *queryResolver) GetUser(ctx context.Context, userID string) (*models1.UserU, error) {
 	userUUID, err := uuid.Parse(userID)
 	if err != nil {
 		return nil, fmt.Errorf("invalid userID: %s", userID)
@@ -126,12 +126,12 @@ func (r *queryResolver) GetUser(ctx context.Context, userID string) (*model.User
 	if err != nil {
 		return nil, err
 	}
-	fio := &model.FIOResponse{
+	fio := &models1.FIOResponse{
 		Name:       user.Name,
 		Surname:    user.Surname,
 		Patronymic: &user.Patronymic,
 	}
-	userResponse := &model.UserU{
+	userResponse := &models1.UserU{
 		ID:          user.ID.String(),
 		Fio:         fio,
 		Age:         user.Age,
