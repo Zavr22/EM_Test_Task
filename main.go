@@ -37,7 +37,7 @@ func main() {
 
 	// REDIS
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "redis:6379",
+		Addr:     fmt.Sprintf("redis:%s", os.Getenv("REDIS_PORT")),
 		Password: "",
 		DB:       0,
 	})
@@ -66,9 +66,9 @@ func main() {
 		graph.NewExecutableSchema(graph.Config{Resolvers: resolver}),
 	)
 
-	network := "tcp"
-	address := "kafka:9092"
-	topic := "FIO"
+	network := os.Getenv("KAFKA_NETWORK")
+	address := fmt.Sprintf("%s:%s", os.Getenv("KAFKA_HOST"), os.Getenv("KAFKA_PORT"))
+	topic := os.Getenv("KAFKA_TOPIC")
 	partition := 0
 
 	conn, errKafka := kafka.DialLeader(context.Background(), network, address, topic, partition)
