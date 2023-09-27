@@ -57,7 +57,7 @@ func (h *Handler) CreateUser(c echo.Context) error {
 // @Failure 500 {object} model.CommonResponse
 // @Router /api/users [get]
 func (h *Handler) GetUsers(c echo.Context) error {
-	pageStr := c.Param("page")
+	pageStr := c.QueryParam("page")
 	page, err := strconv.Atoi(pageStr)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{

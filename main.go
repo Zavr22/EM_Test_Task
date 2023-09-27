@@ -71,13 +71,15 @@ func main() {
 			"Error connection to kafka": errKafka,
 		}).Fatal("kafka error connection")
 	}
+	defer conn.Close()
 
 	kafkaConsumer := kafkaServ.NewKafkaConsumer(userServ, conn)
 	profileHandler := handler.NewHandler(userServ)
-	profileHandler.InitRoutes(e, graphql2.GraphQLHandler(resolver))
 
 	go kafkaConsumer.ListenToKafkaTopic()
 	kafkaConsumer.ProduceMessage()
+
+	profileHandler.InitRoutes(e, graphql2.GraphQLHandler(resolver))
 	// Graceful shutdown
 	logrus.Print("App Started")
 	quit := make(chan os.Signal, 1)
@@ -92,6 +94,9 @@ func main() {
 
 	if err := rdb.Close(); err != nil {
 		logrus.Errorf("error occured on db connection close: %s", err.Error())
+	}
+	if err := conn.Close(); err != nil {
+		logrus.Errorf("error occured on kafka connection close: %s", err.Error())
 	}
 	select {}
 }

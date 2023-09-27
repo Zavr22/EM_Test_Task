@@ -29,7 +29,7 @@ func NewHandler(userS User) *Handler {
 // InitRoutes is used to init routes for web service
 func (h *Handler) InitRoutes(router *echo.Echo, graphqlHandler echo.HandlerFunc) *echo.Echo {
 
-	api := router.Group("api")
+	api := router.Group("/api")
 	api.POST("/users", h.CreateUser)
 	api.GET("/users", h.GetUsers)
 	api.GET("/users/:id", h.GetUserByID)

@@ -4,12 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/Zavr22/EMTestTask/pkg/rest/service"
-	"log"
-	"time"
-
 	"github.com/Zavr22/EMTestTask/pkg/model"
+	"github.com/Zavr22/EMTestTask/pkg/rest/service"
 	"github.com/segmentio/kafka-go"
+	"log"
 )
 
 type Kafka struct {
@@ -28,7 +26,7 @@ func (k *Kafka) ListenToKafkaTopic() {
 		message, err := batch.ReadMessage()
 		if err != nil {
 			log.Printf("Error reading message from Kafka: %v", err)
-			continue
+			return
 		}
 
 		var fio model.FIO
@@ -74,34 +72,22 @@ func (k *Kafka) sendToFailedTopic(message []byte) error {
 }
 
 func (k *Kafka) ProduceMessage() {
-	fioMessages := []*model.FIO{
-		{Name: "Dmitriy", Surname: "Ushakov", Patronymic: "Vasilevich"},
-		{Name: "Mihail", Surname: "Alexandrovich", Patronymic: "Kulik"},
+	fioMessages := &model.FIO{
+		Name:       "Dmitriy",
+		Surname:    "Ushakov",
+		Patronymic: "Vasilevich",
 	}
-
-	for {
-		for _, fio := range fioMessages {
-			messageBytes, err := json.Marshal(fio)
-			if err != nil {
-				log.Printf("Error marshalling JSON: %v", err)
-				continue
-			}
-
-			kafkaMessage := kafka.Message{
-				Key:   nil,
-				Value: messageBytes,
-			}
-
-			log.Println("Sending message to Kafka:", string(messageBytes))
-
-			if _, err := k.writerConn.WriteMessages(kafkaMessage); err != nil {
-				log.Printf("Error sending JSON message to Kafka: %v", err)
-			} else {
-				log.Println("Message sent to Kafka successfully")
-				return
-			}
-		}
-
-		time.Sleep(time.Second)
+	messageBytes, err := json.Marshal(fioMessages)
+	if err != nil {
+		log.Printf("Error marshalling JSON: %v", err)
+	}
+	kafkaMessage := kafka.Message{
+		Key:   nil,
+		Value: messageBytes,
+	}
+	if _, err := k.writerConn.WriteMessages(kafkaMessage); err != nil {
+		log.Printf("Error sending JSON message to Kafka: %v", err)
+	} else {
+		log.Println("Message sent to Kafka successfully")
 	}
 }
