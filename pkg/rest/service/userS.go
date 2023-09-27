@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+//go:generate mockgen -source=userS.go -destination=mocks/user_mock.go
+
 type User interface {
 	CreateUser(ctx context.Context, user *models.User) (uuid.UUID, error)
 	GetAllUsers(ctx context.Context, offset int) ([]*models.User, error)
