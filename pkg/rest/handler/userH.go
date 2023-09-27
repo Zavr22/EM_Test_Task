@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/Zavr22/EMTestTask/pkg/model"
+	"github.com/Zavr22/EMTestTask/pkg/models"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
@@ -18,26 +18,26 @@ import (
 // @ID create-user
 // @Accept  json
 // @Produce  json
-// @Param input body model.FIO true "user info"
+// @Param input body models.FIO true "user info"
 // @Success 200 {object} model.User
 // @Failure 400,404,403 {object} model.CommonResponse
 // @Failure 500 {object} model.CommonResponse
 // @Router /api/users [post]
 func (h *Handler) CreateUser(c echo.Context) error {
-	var reqBody model.FIO
+	var reqBody models.FIO
 	errBind := c.Bind(&reqBody)
 	if errBind != nil {
 		logrus.WithFields(logrus.Fields{
 			"reqBody": reqBody,
 		}).Errorf("Bind json, %s", errBind)
-		return echo.NewHTTPError(http.StatusInternalServerError, model.CommonResponse{Message: "data not correct"})
+		return echo.NewHTTPError(http.StatusInternalServerError, models.CommonResponse{Message: "data not correct"})
 	}
 	userID, err := h.userS.CreateUser(c.Request().Context(), &reqBody)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"message": "unable to create user",
 		}).Errorf("error while creating user, %s", err)
-		return echo.NewHTTPError(http.StatusBadRequest, model.CommonResponse{Message: "error while creating user"})
+		return echo.NewHTTPError(http.StatusBadRequest, models.CommonResponse{Message: "error while creating user"})
 	}
 	return c.JSON(http.StatusOK, userID)
 }
@@ -63,7 +63,7 @@ func (h *Handler) GetUsers(c echo.Context) error {
 		logrus.WithFields(logrus.Fields{
 			"page": page,
 		}).Errorf("error converting page into string, %v", err)
-		return echo.NewHTTPError(http.StatusBadRequest, model.CommonResponse{Message: "incorrect page"})
+		return echo.NewHTTPError(http.StatusBadRequest, models.CommonResponse{Message: "incorrect page"})
 	}
 	users, err := h.userS.GetAllUsers(c.Request().Context(), page)
 	if err != nil {
@@ -117,19 +117,19 @@ func (h *Handler) GetUserByID(c echo.Context) error {
 // @ID update-user
 // @Accept   json
 // @Produce  json
-// @Param input body model.EnrichedFIO true "enter new account info"
+// @Param input body models.EnrichedFIO true "enter new account info"
 // @Success 200 {object} model.CommonResponse
 // @Failure 400,404,403 {object} model.CommonResponse
 // @Failure 500 {object} model.CommonResponse
 // @Router /api/users/:id [put]
 func (h *Handler) UpdateUser(c echo.Context) error {
-	var reqBody model.EnrichedFIO
+	var reqBody models.EnrichedFIO
 	errBind := c.Bind(&reqBody)
 	if errBind != nil {
 		logrus.WithFields(logrus.Fields{
 			"reqBody": reqBody,
 		}).Errorf("Bind json, %s", errBind)
-		return echo.NewHTTPError(http.StatusInternalServerError, model.CommonResponse{Message: "data not correct"})
+		return echo.NewHTTPError(http.StatusInternalServerError, models.CommonResponse{Message: "data not correct"})
 	}
 	c.Param("id")
 	userID, err := uuid.Parse(c.Param("id"))
@@ -144,9 +144,9 @@ func (h *Handler) UpdateUser(c echo.Context) error {
 		logrus.WithFields(logrus.Fields{
 			"userID": userID,
 		}).Errorf("error while creating user, %s", errUpdate)
-		return echo.NewHTTPError(http.StatusBadRequest, model.CommonResponse{Message: "error while creating user"})
+		return echo.NewHTTPError(http.StatusBadRequest, models.CommonResponse{Message: "error while creating user"})
 	}
-	return c.JSON(http.StatusOK, model.CommonResponse{Message: "user updated successfully"})
+	return c.JSON(http.StatusOK, models.CommonResponse{Message: "user updated successfully"})
 }
 
 // DeleteUser is used to delete user
@@ -174,7 +174,7 @@ func (h *Handler) DeleteUser(c echo.Context) error {
 	errDelete := h.userS.DeleteProfile(c.Request().Context(), userID)
 	if err != nil {
 		logrus.Errorf("error while delete user, %s", errDelete)
-		return echo.NewHTTPError(http.StatusBadRequest, model.CommonResponse{Message: "couldn't delete user"})
+		return echo.NewHTTPError(http.StatusBadRequest, models.CommonResponse{Message: "couldn't delete user"})
 	}
-	return c.JSON(http.StatusOK, model.CommonResponse{Message: "user deleted successfully"})
+	return c.JSON(http.StatusOK, models.CommonResponse{Message: "user deleted successfully"})
 }

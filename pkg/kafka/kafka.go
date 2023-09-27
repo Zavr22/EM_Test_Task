@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/Zavr22/EMTestTask/pkg/model"
+	"github.com/Zavr22/EMTestTask/pkg/models"
 	"github.com/Zavr22/EMTestTask/pkg/rest/service"
 	"github.com/segmentio/kafka-go"
 	"log"
@@ -29,7 +29,7 @@ func (k *Kafka) ListenToKafkaTopic() {
 			return
 		}
 
-		var fio model.FIO
+		var fio models.FIO
 		if err := json.Unmarshal(message.Value, &fio); err != nil {
 			log.Printf("Error unmarshalling JSON message: %v", err)
 			if err := k.sendToFailedTopic(message.Value); err != nil {
@@ -72,7 +72,7 @@ func (k *Kafka) sendToFailedTopic(message []byte) error {
 }
 
 func (k *Kafka) ProduceMessage() {
-	fioMessages := &model.FIO{
+	fioMessages := &models.FIO{
 		Name:       "Dmitriy",
 		Surname:    "Ushakov",
 		Patronymic: "Vasilevich",

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/Zavr22/EMTestTask/pkg/cache"
 	database "github.com/Zavr22/EMTestTask/pkg/db"
-	graphql2 "github.com/Zavr22/EMTestTask/pkg/graphql"
+	"github.com/Zavr22/EMTestTask/pkg/graph"
 	kafkaServ "github.com/Zavr22/EMTestTask/pkg/kafka"
 	"github.com/Zavr22/EMTestTask/pkg/rest/handler"
 	"github.com/Zavr22/EMTestTask/pkg/rest/repository"
@@ -59,7 +59,7 @@ func main() {
 
 	userServ := service.NewUserService(userRepo, redisClient)
 
-	resolver := graphql2.NewResolver(userRepo)
+	resolver := graph.NewResolver(userServ)
 	network := "tcp"
 	address := "kafka:9092"
 	topic := "FIO"
@@ -79,7 +79,7 @@ func main() {
 	go kafkaConsumer.ListenToKafkaTopic()
 	kafkaConsumer.ProduceMessage()
 
-	profileHandler.InitRoutes(e, graphql2.GraphQLHandler(resolver))
+	profileHandler.InitRoutes(e, graph.NewGraphqlHandler(resolver))
 	// Graceful shutdown
 	logrus.Print("App Started")
 	quit := make(chan os.Signal, 1)

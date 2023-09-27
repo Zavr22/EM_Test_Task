@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"github.com/Zavr22/EMTestTask/pkg/api"
 	"github.com/Zavr22/EMTestTask/pkg/cache"
-	"github.com/Zavr22/EMTestTask/pkg/model"
+	"github.com/Zavr22/EMTestTask/pkg/models"
 	"github.com/google/uuid"
 	"time"
 )
 
 type User interface {
-	CreateUser(ctx context.Context, user *model.User) (uuid.UUID, error)
-	GetAllUsers(ctx context.Context, offset int) ([]*model.User, error)
-	GetUser(ctx context.Context, userID uuid.UUID) (model.User, error)
-	UpdateProfile(ctx context.Context, userID uuid.UUID, input model.EnrichedFIO) error
+	CreateUser(ctx context.Context, user *models.User) (uuid.UUID, error)
+	GetAllUsers(ctx context.Context, offset int) ([]*models.User, error)
+	GetUser(ctx context.Context, userID uuid.UUID) (models.User, error)
+	UpdateProfile(ctx context.Context, userID uuid.UUID, input models.EnrichedFIO) error
 	DeleteProfile(ctx context.Context, userID uuid.UUID) error
 }
 
@@ -27,20 +27,20 @@ func NewUserService(userRepo User, redis *cache.RedisClient) *UserService {
 	return &UserService{userRepo: userRepo, redis: redis}
 }
 
-func (s *UserService) CreateUser(ctx context.Context, user *model.FIO) (uuid.UUID, error) {
+func (s *UserService) CreateUser(ctx context.Context, user *models.FIO) (uuid.UUID, error) {
 	return s.EnrichAndSaveToDB(ctx, user.Name, user.Surname, user.Patronymic)
 }
 
-func (s *UserService) GetAllUsers(ctx context.Context, page int) ([]*model.User, error) {
+func (s *UserService) GetAllUsers(ctx context.Context, page int) ([]*models.User, error) {
 	offset := (page - 1) * 30
 	return s.userRepo.GetAllUsers(ctx, offset)
 }
 
-func (s *UserService) GetUser(ctx context.Context, userID uuid.UUID) (model.User, error) {
+func (s *UserService) GetUser(ctx context.Context, userID uuid.UUID) (models.User, error) {
 	return s.userRepo.GetUser(ctx, userID)
 }
 
-func (s *UserService) UpdateProfile(ctx context.Context, userID uuid.UUID, input model.EnrichedFIO) error {
+func (s *UserService) UpdateProfile(ctx context.Context, userID uuid.UUID, input models.EnrichedFIO) error {
 	return s.userRepo.UpdateProfile(ctx, userID, input)
 }
 
@@ -61,7 +61,7 @@ func (s *UserService) EnrichAndSaveToDB(ctx context.Context, name, surname, patr
 	if err != nil {
 		return uuid.Nil, err
 	}
-	user := &model.User{
+	user := &models.User{
 		Name:        name,
 		Surname:     surname,
 		Patronymic:  patronymic,

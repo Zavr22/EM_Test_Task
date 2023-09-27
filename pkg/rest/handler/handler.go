@@ -2,18 +2,18 @@ package handler
 
 import (
 	"context"
-	"github.com/Zavr22/EMTestTask/pkg/graphql"
-	"github.com/Zavr22/EMTestTask/pkg/model"
+	"github.com/Zavr22/EMTestTask/pkg/graph"
+	"github.com/Zavr22/EMTestTask/pkg/models"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
 // User interface consists of user service methods
 type User interface {
-	CreateUser(ctx context.Context, user *model.FIO) (uuid.UUID, error)
-	GetAllUsers(ctx context.Context, page int) ([]*model.User, error)
-	GetUser(ctx context.Context, userID uuid.UUID) (model.User, error)
-	UpdateProfile(ctx context.Context, userID uuid.UUID, input model.EnrichedFIO) error
+	CreateUser(ctx context.Context, user *models.FIO) (uuid.UUID, error)
+	GetAllUsers(ctx context.Context, page int) ([]*models.User, error)
+	GetUser(ctx context.Context, userID uuid.UUID) (models.User, error)
+	UpdateProfile(ctx context.Context, userID uuid.UUID, input models.EnrichedFIO) error
 	DeleteProfile(ctx context.Context, userID uuid.UUID) error
 	EnrichAndSaveToDB(ctx context.Context, name, surname, patronymic string) (uuid.UUID, error)
 }
@@ -36,7 +36,7 @@ func (h *Handler) InitRoutes(router *echo.Echo, graphqlHandler echo.HandlerFunc)
 	api.PUT("/users/:id", h.UpdateUser)
 	api.DELETE("/users/:id", h.DeleteUser)
 	router.POST("/query", graphqlHandler)
-	router.GET("/", graphql.PlaygroundHandler())
+	router.GET("/", graph.PlaygroundHandler())
 
 	router.Logger.Fatal(router.Start(":9000"))
 	return router

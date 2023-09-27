@@ -1,0 +1,44 @@
+input FIO {
+  name: String!
+  surname: String!
+  patronymic: String
+}
+
+input EnrichedFIO {
+  name: String!
+  surname: String!
+  patronymic: String
+  age: Int!
+  gender: String!
+  nationality: String!
+}
+
+type FIOResponse {
+  name: String!
+  surname: String!
+  patronymic: String
+}
+
+type UserU {
+  id: ID!
+  fio: FIOResponse!
+  age: Int!
+  gender: String!
+  nationality: String!
+}
+
+type CommonResponse {
+  message: String!
+}
+
+extend type Query {
+  getAllUsers(page: Int!): [UserU!]!
+  getUser(userID: ID!): UserU!
+}
+
+extend type Mutation {
+  createUser(fio: FIO!, age: Int!, gender: String!, nationality: String!): ID!
+  updateProfile(userID: ID!, input: EnrichedFIO!): CommonResponse!
+  deleteProfile(userID: ID!): CommonResponse!
+  enrichAndSaveToDB(name: String!, surname: String!, patronymic: String): ID!
+}
