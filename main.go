@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	handlerG "github.com/99designs/gqlgen/graphql/handler"
 	"github.com/Zavr22/EMTestTask/pkg/cache"
 	database "github.com/Zavr22/EMTestTask/pkg/db"
 	"github.com/Zavr22/EMTestTask/pkg/graph"
@@ -60,6 +61,11 @@ func main() {
 	userServ := service.NewUserService(userRepo, redisClient)
 
 	resolver := graph.NewResolver(userServ)
+
+	graphqlH := handlerG.NewDefaultServer(
+		graph.NewExecutableSchema(graph.Config{Resolvers: resolver}),
+	)
+
 	network := "tcp"
 	address := "kafka:9092"
 	topic := "FIO"
@@ -79,7 +85,7 @@ func main() {
 	go kafkaConsumer.ListenToKafkaTopic()
 	kafkaConsumer.ProduceMessage()
 
-	profileHandler.InitRoutes(e, graph.NewGraphqlHandler(resolver))
+	profileHandler.InitRoutes(e, graph.NewGraphqlHandler(graphqlH))
 	// Graceful shutdown
 	logrus.Print("App Started")
 	quit := make(chan os.Signal, 1)

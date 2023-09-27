@@ -6,13 +6,9 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func NewGraphqlHandler(resolver *Resolver) echo.HandlerFunc {
-	graphqlHandler := handler.NewDefaultServer(NewExecutableSchema(
-		Config{
-			Resolvers: resolver,
-		}))
+func NewGraphqlHandler(graphqlH *handler.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		graphqlHandler.ServeHTTP(c.Response(), c.Request())
+		graphqlH.ServeHTTP(c.Response(), c.Request())
 		return nil
 	}
 }
