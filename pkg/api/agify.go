@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 )
 
 type AgifyResponse struct {
@@ -14,7 +15,8 @@ type AgifyResponse struct {
 }
 
 func GetAgifyAge(name string) (int, error) {
-	url := fmt.Sprintf("https://api.agify.io/?name=%s", name)
+	apiUrl := os.Getenv("AGIFY_URL")
+	url := fmt.Sprintf("%s=%s", apiUrl, name)
 	resp, err := http.Get(url)
 	if err != nil {
 		return 0, err

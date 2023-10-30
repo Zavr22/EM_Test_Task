@@ -19,9 +19,9 @@ import (
 // @Accept  json
 // @Produce  json
 // @Param input body models.FIO true "user info"
-// @Success 200 {object} model.User
-// @Failure 400,404,403 {object} model.CommonResponse
-// @Failure 500 {object} model.CommonResponse
+// @Success 200 {object} models.User
+// @Failure 400,404,403 {object} models.CommonResponse
+// @Failure 500 {object} models.CommonResponse
 // @Router /api/users [post]
 func (h *Handler) CreateUser(c echo.Context) error {
 	var reqBody models.FIO
@@ -52,12 +52,13 @@ func (h *Handler) CreateUser(c echo.Context) error {
 // @Accept json
 // @Param page query string true "current page"
 // @Produce  json
-// @Success 200 {array} model.User
-// @Failure 400,404,403 {object} model.CommonResponse
-// @Failure 500 {object} model.CommonResponse
+// @Success 200 {array} models.User
+// @Failure 400,404,403 {object} models.CommonResponse
+// @Failure 500 {object} models.CommonResponse
 // @Router /api/users [get]
 func (h *Handler) GetUsers(c echo.Context) error {
 	pageStr := c.QueryParam("page")
+	limitStr := c.QueryParam("limit")
 	page, err := strconv.Atoi(pageStr)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
@@ -65,7 +66,14 @@ func (h *Handler) GetUsers(c echo.Context) error {
 		}).Errorf("error converting page into string, %v", err)
 		return echo.NewHTTPError(http.StatusBadRequest, models.CommonResponse{Message: "incorrect page"})
 	}
-	users, err := h.userS.GetAllUsers(c.Request().Context(), page)
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"limit": limit,
+		}).Errorf("error converting page into string, %v", err)
+		return echo.NewHTTPError(http.StatusBadRequest, models.CommonResponse{Message: "incorrect page"})
+	}
+	users, err := h.userS.GetAllUsers(c.Request().Context(), page, limit)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"users": users,
@@ -85,9 +93,9 @@ func (h *Handler) GetUsers(c echo.Context) error {
 // @Accept   json
 // @Produce  json
 // @Param userID query string true "userID"
-// @Success 200 {object} model.User
-// @Failure 400,404,403 {object} model.CommonResponse
-// @Failure 500 {object} model.CommonResponse
+// @Success 200 {object} models.User
+// @Failure 400,404,403 {object} models.CommonResponse
+// @Failure 500 {object} models.CommonResponse
 // @Router /api/users/:id [get]
 func (h *Handler) GetUserByID(c echo.Context) error {
 	c.Param("id")
@@ -118,9 +126,9 @@ func (h *Handler) GetUserByID(c echo.Context) error {
 // @Accept   json
 // @Produce  json
 // @Param input body models.EnrichedFIO true "enter new account info"
-// @Success 200 {object} model.CommonResponse
-// @Failure 400,404,403 {object} model.CommonResponse
-// @Failure 500 {object} model.CommonResponse
+// @Success 200 {object} models.CommonResponse
+// @Failure 400,404,403 {object} models.CommonResponse
+// @Failure 500 {object} models.CommonResponse
 // @Router /api/users/:id [put]
 func (h *Handler) UpdateUser(c echo.Context) error {
 	var reqBody models.EnrichedFIO
@@ -158,9 +166,9 @@ func (h *Handler) UpdateUser(c echo.Context) error {
 // @ID delete-user
 // @Accept   json
 // @Produce  json
-// @Success 200 {object} model.CommonResponse
-// @Failure 400,404,403 {object} model.CommonResponse
-// @Failure 500 {object} model.CommonResponse
+// @Success 200 {object} models.CommonResponse
+// @Failure 400,404,403 {object} models.CommonResponse
+// @Failure 500 {object} models.CommonResponse
 // @Router /api/users/:id [delete]
 func (h *Handler) DeleteUser(c echo.Context) error {
 	c.Param("id")

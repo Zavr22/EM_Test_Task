@@ -3,19 +3,17 @@ package repository
 import (
 	"context"
 	"fmt"
-	"github.com/Zavr22/EMTestTask/pkg/cache"
 	"github.com/Zavr22/EMTestTask/pkg/models"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type UserRepository struct {
-	db     *pgxpool.Pool
-	client *cache.RedisClient
+	db *pgxpool.Pool
 }
 
-func NewUserRepository(db *pgxpool.Pool, client *cache.RedisClient) *UserRepository {
-	return &UserRepository{db: db, client: client}
+func NewUserRepository(db *pgxpool.Pool) *UserRepository {
+	return &UserRepository{db: db}
 }
 
 func (r *UserRepository) CreateUser(ctx context.Context, user *models.User) (uuid.UUID, error) {
@@ -27,10 +25,10 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *models.User) (uui
 	return id, nil
 }
 
-func (r *UserRepository) GetAllUsers(ctx context.Context, offset int) ([]*models.User, error) {
+func (r *UserRepository) GetAllUsers(ctx context.Context, offset, limit int) ([]*models.User, error) {
 	var users []*models.User
 
-	rowsUsers, errUsers := r.db.Query(ctx, "SELECT id, name, surname, patronymic, age, gender, nationality FROM users LIMIT 30 OFFSET $1", offset)
+	rowsUsers, errUsers := r.db.Query(ctx, "SELECT id, name, surname, patronymic, age, gender, nationality FROM users LIMIT $1 OFFSET $2", limit, offset)
 	if errUsers != nil {
 		return users, fmt.Errorf("error while getting users, %s", errUsers)
 	}

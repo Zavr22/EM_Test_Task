@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 )
 
 type NationalizeResponse struct {
@@ -15,7 +16,8 @@ type NationalizeResponse struct {
 }
 
 func GetNationalizeNationality(name string) (string, error) {
-	url := fmt.Sprintf("https://api.nationalize.io/?name=%s", name)
+	apiUrl := os.Getenv("NATIONALIZE_URL")
+	url := fmt.Sprintf("%s=%s", apiUrl, name)
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", err

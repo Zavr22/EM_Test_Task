@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 )
 
 type GenderizeResponse struct {
@@ -14,7 +15,8 @@ type GenderizeResponse struct {
 }
 
 func GetGenderizeGender(name string) (string, error) {
-	url := fmt.Sprintf("https://api.genderize.io/?name=%s", name)
+	apiUrl := os.Getenv("GENDERIZE_URL")
+	url := fmt.Sprintf("%s=%s", apiUrl, name)
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", err

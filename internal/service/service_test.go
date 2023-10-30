@@ -3,10 +3,9 @@ package service_test
 import (
 	"context"
 	"errors"
-	"github.com/Zavr22/EMTestTask/pkg/cache"
+	"github.com/Zavr22/EMTestTask/internal/service"
+	"github.com/Zavr22/EMTestTask/internal/service/mocks"
 	"github.com/Zavr22/EMTestTask/pkg/models"
-	"github.com/Zavr22/EMTestTask/pkg/rest/service"
-	mock_service "github.com/Zavr22/EMTestTask/pkg/rest/service/mocks"
 	"github.com/go-redis/redis/v8"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
@@ -14,17 +13,11 @@ import (
 )
 
 func TestUserService_CreateUser(t *testing.T) {
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
-	})
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockUserRepo := mock_service.NewMockUser(ctrl)
-	mockRedis := cache.NewRedisClient(rdb)
 
-	userService := service.NewUserService(mockUserRepo, mockRedis)
+	userService := service.NewUserService(ctrl)
 
 	ctx := context.Background()
 	name := "John"
@@ -71,6 +64,7 @@ func TestUserService_GetAllUsers(t *testing.T) {
 
 	ctx := context.Background()
 	page := 2
+	limit := 2
 
 	expectedUsers := []*models.User{
 		{ID: uuid.New(), Name: "John", Surname: "Doe"},
@@ -79,7 +73,7 @@ func TestUserService_GetAllUsers(t *testing.T) {
 
 	mockUserRepo.EXPECT().GetAllUsers(ctx, 30).Return(expectedUsers, nil)
 
-	users, err := userService.GetAllUsers(ctx, page)
+	users, err := userService.GetAllUsers(ctx, page, limit)
 
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
